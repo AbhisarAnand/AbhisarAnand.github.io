@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Details | Abhisar Anand</title>
+    <!-- FONTS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y2N5LLQKGL"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-Y2N5LLQKGL');
+    </script>
+    <style>
+        .detail-hero {
+            height: 60vh;
+            background: #f0f0f0;
+            margin-bottom: 3rem;
+            overflow: hidden;
+        }
+
+        .detail-hero img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .detail-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .detail-meta {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 1rem;
+        }
+
+        .detail-meta div strong {
+            display: block;
+            font-weight: 500;
+            color: #111;
+        }
+
+        .detail-meta div span {
+            font-size: 0.9rem;
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="nav-wrapper">
+        <div class="container nav-container">
+            <a href="index.html" class="brand">Abhisar Anand.</a>
+            <nav class="nav-links">
+                <a href="index.html#about">About</a>
+                <a href="projects.html">Projects</a>
+                <a href="photography.html">Photography</a>
+                <a href="index.html#contact">Contact</a>
+            </nav>
+        </div>
+    </div>
+
+    <!-- HERO IMAGE -->
+    <div class="detail-hero">
+        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070&auto=format&fit=crop"
+            alt="Hero">
+    </div>
+
+    <main class="section" style="padding-top: 0;">
+        <div class="detail-content fade-in-up">
+            <h1 class="display-title" style="margin-bottom: 1rem;">On-Time Delivery Compliance Dashboard</h1>
+
+            <div class="detail-meta">
+                <div>
+                    <strong>Role</strong>
+                    <span>Data Analyst Intern</span>
+                </div>
+                <div>
+                    <strong>Company</strong>
+                    <span>Brooks Automation</span>
+                </div>
+                <div>
+                    <strong>Tech Stack</strong>
+                    <span>Python, Streamlit, NLP</span>
+                </div>
+            </div>
+
+            <h3 class="card-title" style="margin-bottom: 1rem;">The Challenge</h3>
+            <p style="color: #555; margin-bottom: 2rem;">
+                Global supplier performance was difficult to track in real-time. The sourcing team needed a way to
+                visualize OTD (On-Time Delivery) metrics and understand the "why" behind delays without manually sifting
+                through thousands of emails and news reports.
+            </p>
+
+            <h3 class="card-title" style="margin-bottom: 1rem;">The Solution</h3>
+            <p style="color: #555; margin-bottom: 2rem;">
+                I designed and developed an AI-powered intelligence dashboard. It aggregates data from the ERP system to
+                provide part-level insights. Key features include:
+            <ul style="list-style: disc; margin-left: 1.5rem; margin-top: 1rem;">
+                <li>Automated web scraping to fetch news related to specific suppliers.</li>
+                <li>A custom AI chatbot that allows directors to query the data using natural language.</li>
+                <li>Real-time Purchase Price Variance (PPV) detection.</li>
+            </ul>
+            </p>
+
+            <h3 class="card-title" style="margin-bottom: 1rem;">Impact</h3>
+            <p style="color: #555; margin-bottom: 2rem;">
+                The solution was demoed to the CIO and Strategic Sourcing Directors, driving visibility and credibility.
+                It is now being used to proactively manage supplier risks and improve global sourcing efficiency.
+            </p>
+
+            <a href="projects.html" style="text-decoration: underline;">&larr; Back to all projects</a>
+        </div>
+    </main>
+
+    <footer class="container section" style="padding-top: 0; text-align: center;">
+        <p class="meta-text">&copy; 2025 Abhisar Anand. All Rights Reserved.</p>
+    </footer>
+
+    <script src="js/script.js"></script>
+</body>
+
+</html>
