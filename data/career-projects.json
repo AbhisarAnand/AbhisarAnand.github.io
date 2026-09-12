@@ -1,15 +1,52 @@
 {
   "projects": [
     {
-      "project_id": "flow-state",
-      "slug": "flow-state",
-      "title": "Flow State",
-      "subtitle": "Dictation that fits into a macOS workflow",
-      "role": "Application developer",
-      "problem": "Dictation is useful only if the text ends up where you are working. Flow State brings speech recognition into the current application instead of making the user move between a recorder and an editor.",
-      "contribution": "I built the macOS application in Swift, using SwiftUI for the interface and AppKit for integration with the desktop. A global shortcut starts the workflow, WhisperKit handles local transcription, and the result can be inserted into the active application.",
-      "engineering_detail": "The local code separates transcription behind a provider interface, allowing the application to select a backend without putting model-specific logic throughout the interface. Optional Groq formatting adapts the text to its destination.",
-      "limitations": "WhisperKit handles transcription on the Mac. Optional Groq formatting sends the transcript to an external service; users can choose whether to enable it."
+      "project_id": "brooks-ppv",
+      "slug": "brooks-ppv",
+      "title": "Purchase price variance dashboard",
+      "subtitle": "From weekly file preparation to part-level investigation",
+      "role": "Developer at Brooks Automation",
+      "category": "Work",
+      "stack": [
+        "Python",
+        "FastAPI",
+        "DuckDB",
+        "Data visualization"
+      ],
+      "focus": "3–4 hours of preparation → under 30 seconds",
+      "problem": "A weekly report depended on one colleague spending roughly three to four hours preparing and consolidating source data. Other people had to wait for that step before reviewing purchase price variance.",
+      "contribution": "I built a source-file consolidation pipeline and integrated it into a dashboard used by the sourcing team. Users can move from a global view to a commodity, buyer, supplier, organization, or individual part.",
+      "engineering_detail": "Exception reporting highlights records that need investigation, including parts with a zero standard cost. The same interface shows favorable and unfavorable variance and progress against goals.",
+      "steps": [
+        [
+          "Consolidate source files",
+          "The pipeline brings source data together into a form the team can use, replacing repeated manual preparation."
+        ],
+        [
+          "Review the global picture",
+          "The dashboard exposes favorable and unfavorable purchase price variance and progress against the team’s goals."
+        ],
+        [
+          "Find the exceptions",
+          "Part-level checks surface records such as zero-standard-cost items that need investigation before the numbers can be trusted."
+        ],
+        [
+          "Drill into the cause",
+          "Users can explore by commodity, buyer, supplier, organization or part and bring the relevant records into a follow-up discussion."
+        ]
+      ],
+      "decisions": [
+        [
+          "Start with the business bottleneck",
+          "The original problem was the time the team spent waiting for prepared data. I built consolidation and exploration into the same workflow so a faster calculation also became easier to use."
+        ],
+        [
+          "Put data quality beside the metric",
+          "A favorable or unfavorable total is only useful if the underlying records make sense. Exception reporting gives the team a concrete place to investigate and correct questionable entries."
+        ]
+      ],
+      "result": "The consolidation step runs in under 30 seconds. Exception reporting surfaces approximately 10–15 parts per month for investigation and correction.",
+      "limitations": "These figures describe the internal workflow I worked on. Consolidation time excludes subsequent investigation and review."
     },
     {
       "project_id": "prepify",
@@ -17,66 +54,97 @@
       "title": "Prepify interview analysis backend",
       "subtitle": "Keeping analysis work out of the request cycle",
       "role": "Backend contributor on a team project",
+      "category": "Team projects",
+      "stack": [
+        "Python",
+        "FastAPI",
+        "PostgreSQL",
+        "Celery",
+        "RabbitMQ",
+        "AWS S3"
+      ],
+      "focus": "Analysis without blocking the request",
       "problem": "An interview analysis request can involve several stages of audio and video processing. Doing that work inside a single web request would make the user wait for the entire pipeline before receiving a response.",
       "contribution": "I built FastAPI endpoints that create PostgreSQL job records, queue interview analysis through Celery and RabbitMQ, and return HTTP 202 with a job ID. I also wrote automated tests and technical documentation for the backend.",
       "engineering_detail": "The worker retrieves interview video from AWS S3, retries unavailable downloads up to 12 times, and falls back to audio-only analysis when needed. Job state, results and errors are stored in PostgreSQL; worker logs help trace failures while the application polls for progress.",
+      "steps": [
+        [
+          "Accept the request",
+          "An API call creates a persistent job record and returns HTTP 202 with a job ID. The client can start checking progress immediately."
+        ],
+        [
+          "Queue the work",
+          "Celery and RabbitMQ move the longer-running interview analysis into a worker, outside the web request."
+        ],
+        [
+          "Retrieve and analyze",
+          "The worker retrieves media, processes audio and video, and records the resulting analysis. S3 downloads include retries and an audio-only fallback."
+        ],
+        [
+          "Expose the result",
+          "PostgreSQL stores job state, results and errors. The status endpoint lets the client retrieve progress and completed output."
+        ]
+      ],
+      "decisions": [
+        [
+          "Give every request a durable identity",
+          "A stored job ID connects the original request to its status and result even though the worker has a different lifecycle from the API request."
+        ],
+        [
+          "Make missing media manageable",
+          "The worker retries unavailable video rather than failing at the first download attempt. If video remains unavailable, audio-only processing provides a defined fallback. I added tests, documentation and failure logs to make the workflow easier to maintain."
+        ]
+      ],
       "limitations": "Prepify is a team project. This page focuses on my backend contribution. I have not published throughput or production reliability benchmarks."
     },
     {
-      "project_id": "phoneme-error-detection",
-      "slug": "phoneme-error-detection",
-      "title": "Phoneme Error Detection",
-      "subtitle": "Making pronunciation feedback easier to use",
-      "role": "Dashboard contributor on a team project",
-      "problem": "A transcript can show which word a system recognized, but it does not explain which sound a learner should practice. This team project analyzes speech at the phoneme level and presents feedback in a practice interface.",
-      "contribution": "I contributed an adaptive pronunciation dashboard. The application lets users record a word, view analysis results, and revisit saved attempts. My contribution is part of a larger system with a FastAPI backend and a Wav2Vec2-based phoneme model.",
-      "engineering_detail": "The backend compares predicted phonemes with a reference pronunciation and returns a structured response for the interface. Separate history endpoints let the product retain attempts instead of treating each recording as an isolated result.",
-      "limitations": "This was a team-built application. My contribution was the adaptive dashboard and practice workflow; the speech model was part of the broader team project."
-    },
-    {
-      "project_id": "echopath",
-      "slug": "echopath",
-      "title": "EchoPath",
-      "subtitle": "Exploring camera-based spatial audio cues",
-      "role": "Honors project developer",
-      "problem": "EchoPath explores whether a camera and headphones can communicate useful information about nearby objects. It translates visual observations into directional tones and spoken cues.",
-      "contribution": "I developed a local prototype that combines YOLO object detection, Depth Anything V2 depth estimates, object tracking, and spatial audio. The implementation can use OpenAL for spatialization, with a stereo audio fallback.",
-      "engineering_detail": "Raw detections can change from frame to frame. The tracking layer associates boxes over time and smooths estimated nearness before updating the sound. Spoken announcements use cooldowns so an object does not trigger the same message continuously.",
-      "limitations": "This is a prototype, not a validated navigation aid. Monocular depth estimates are relative signals, not a guarantee of physical distance. A usable mobility system would need careful testing with its intended users, including failures and environmental changes."
-    },
-    {
-      "project_id": "sync-assignments",
-      "slug": "sync-assignments",
-      "title": "Sync Assignments",
-      "subtitle": "Turning course emails into tasks",
-      "role": "Developer",
-      "problem": "Assignment notices arrive in email, while the work is planned in a calendar or task manager. Copying the same deadlines into another system is repetitive and easy to get wrong.",
-      "contribution": "I built a Python workflow that reads course email notices, extracts assignments, and synchronizes them with Google Tasks and Todoist. The local version also includes a macOS launcher and notifications.",
-      "engineering_detail": "The workflow handles existing entries and daily-run checks rather than blindly adding a new task on every run. It reports new and existing assignments and sends a completion or error notification.",
-      "limitations": "The workflow depends on the structure of course email notices and the connected task services."
-    },
-    {
-      "project_id": "mediscribe",
-      "slug": "mediscribe",
-      "title": "MediScribe capstone",
-      "subtitle": "Adding anomaly alerts to a healthcare application",
-      "role": "Contributor on a team capstone",
-      "problem": "The capstone explores healthcare data workflows through transcription, dashboards, and analysis. One part of the work focuses on making cross-hospital anomalies visible to a reviewer.",
-      "contribution": "I contributed cross-hospital anomaly detection and hospital alerts to the team’s MediScribe capstone. My work focused on surfacing unusual patterns for review within the larger healthcare application.",
-      "engineering_detail": "The alert feature connects analysis results to a reviewer-facing workflow. It sits alongside transcription and dashboard components built by the team.",
-      "limitations": "This was an academic team project, separate from my MIE internship. The alerts were not clinically validated."
-    },
-    {
-      "project_id": "brooks-ppv",
-      "slug": "brooks-ppv",
-      "title": "Purchase price variance dashboard",
-      "subtitle": "From weekly file preparation to part-level investigation",
-      "role": "Developer at Brooks Automation",
-      "problem": "A weekly report depended on one colleague spending roughly three to four hours preparing and consolidating source data. Other people had to wait for that step before reviewing purchase price variance.",
-      "contribution": "I built a source-file consolidation pipeline and integrated it into a dashboard used by the sourcing team. Users can move from a global view to a commodity, buyer, supplier, organization, or individual part.",
-      "engineering_detail": "Exception reporting highlights records that need investigation, including parts with a zero standard cost. The same interface shows favorable and unfavorable variance and progress against goals.",
-      "result": "The consolidation step runs in under 30 seconds. Exception reporting surfaces approximately 10–15 parts per month for investigation and correction.",
-      "limitations": "These figures describe the internal workflow I worked on. Consolidation time excludes subsequent investigation and review."
+      "project_id": "flow-state",
+      "slug": "flow-state",
+      "title": "Flow State",
+      "subtitle": "Dictation that fits into a macOS workflow",
+      "role": "Application developer",
+      "category": "Independent",
+      "stack": [
+        "Swift",
+        "SwiftUI",
+        "AppKit",
+        "WhisperKit",
+        "Groq"
+      ],
+      "github": "https://github.com/AbhisarAnand/flow-state",
+      "focus": "A complete desktop workflow",
+      "problem": "Dictation is useful only if the text ends up where you are working. Flow State brings speech recognition into the current application instead of making the user move between a recorder and an editor.",
+      "contribution": "I built the macOS application in Swift, using SwiftUI for the interface and AppKit for integration with the desktop. A global shortcut starts the workflow, WhisperKit handles local transcription, and the result can be inserted into the active application.",
+      "engineering_detail": "The local code separates transcription behind a provider interface, allowing the application to select a backend without putting model-specific logic throughout the interface. Optional Groq formatting adapts the text to its destination.",
+      "steps": [
+        [
+          "Start anywhere",
+          "A global shortcut starts dictation while the user stays in the application they are working in."
+        ],
+        [
+          "Transcribe locally",
+          "WhisperKit converts the captured speech into text on the Mac, keeping transcription separate from the interface."
+        ],
+        [
+          "Format when useful",
+          "Optional Groq formatting adapts the transcript to the destination, such as an email, a message or code."
+        ],
+        [
+          "Return to the task",
+          "The result is inserted into the active application so the user does not need to move it out of a separate editor."
+        ]
+      ],
+      "decisions": [
+        [
+          "Fit the existing workflow",
+          "The desktop integration matters as much as the transcription model. I used AppKit for the global shortcut and application interaction, with SwiftUI for the interface."
+        ],
+        [
+          "Keep providers separate",
+          "A transcription provider interface keeps model-specific logic out of the rest of the app. Local transcription and optional cloud formatting remain separate choices."
+        ]
+      ],
+      "limitations": "WhisperKit handles transcription on the Mac. Optional Groq formatting sends the transcript to an external service; users can choose whether to enable it."
     },
     {
       "project_id": "forecast-pivot",
@@ -84,11 +152,143 @@
       "title": "Supplier forecast automation",
       "subtitle": "Generate the workbooks, then make review straightforward",
       "role": "Developer at Brooks Automation",
+      "category": "Work",
+      "stack": [
+        "Python",
+        "Excel",
+        "Outlook",
+        "Workflow automation"
+      ],
+      "focus": "Monthly forecasts with a review step",
       "problem": "Preparing and validating individual supplier forecasts could take two to three weeks. A readiness assessment also surfaced gaps in regular forecast communication.",
       "contribution": "I built a tool that takes the supplier list and source data, generates each supplier’s Excel forecast in horizontal and vertical layouts, and prepares Outlook drafts with the right recipients and copied contacts.",
       "engineering_detail": "Generation and sending are separate steps. The tool prepares the files and drafts; people validate the output before sending it. That keeps the monthly communication process reviewable.",
+      "steps": [
+        [
+          "Select suppliers",
+          "A supplier list drives the run, alongside the source data and intended recipients."
+        ],
+        [
+          "Build the workbooks",
+          "The tool produces a supplier-specific Excel forecast in horizontal and vertical layouts."
+        ],
+        [
+          "Prepare the communication",
+          "Outlook drafts include the intended recipients and copied contacts, alongside the generated forecast files."
+        ],
+        [
+          "Validate and send",
+          "The team checks the output before sending. File generation is automated; the review remains an explicit part of the monthly process."
+        ]
+      ],
+      "decisions": [
+        [
+          "Automate the preparation together",
+          "Generating a workbook alone would leave the communication work behind. Preparing both files and drafts reduces repeated setup across suppliers."
+        ],
+        [
+          "Keep a person at the review step",
+          "The tool supports the team’s existing validation responsibility. Under a minute refers to generation; the complete workflow includes a few hours of review and subsequent sending."
+        ]
+      ],
       "result": "Workbook generation takes under a minute, followed by a few hours of validation. The team adopted the workflow for monthly forecasts.",
       "limitations": "The full process includes human validation and sending. The tool is not described as sending forecasts autonomously."
+    },
+    {
+      "project_id": "echopath",
+      "slug": "echopath",
+      "title": "EchoPath",
+      "subtitle": "Exploring camera-based spatial audio cues",
+      "role": "Honors project developer",
+      "category": "Independent",
+      "stack": [
+        "Python",
+        "OpenCV",
+        "YOLO",
+        "Depth Anything V2",
+        "OpenAL"
+      ],
+      "focus": "From visual observations to audio cues",
+      "problem": "EchoPath explores whether a camera and headphones can communicate useful information about nearby objects. It translates visual observations into directional tones and spoken cues.",
+      "contribution": "I developed a local prototype that combines YOLO object detection, Depth Anything V2 depth estimates, object tracking, and spatial audio. The implementation can use OpenAL for spatialization, with a stereo audio fallback.",
+      "engineering_detail": "Raw detections can change from frame to frame. The tracking layer associates boxes over time and smooths estimated nearness before updating the sound. Spoken announcements use cooldowns so an object does not trigger the same message continuously.",
+      "steps": [
+        [
+          "Observe the scene",
+          "The camera feeds object detection and monocular depth estimation, producing boxes, object classes and relative nearness signals."
+        ],
+        [
+          "Track across frames",
+          "The tracking layer matches detections over time and smooths nearness estimates so audio does not jump with every frame."
+        ],
+        [
+          "Choose the cues",
+          "Object position informs direction, nearness changes the tone, and the voice layer selects objects for spoken announcements."
+        ],
+        [
+          "Render the audio",
+          "OpenAL supplies spatial audio, with a stereo fallback when it is unavailable. Cooldowns limit repetitive spoken cues."
+        ]
+      ],
+      "decisions": [
+        [
+          "Stability before more announcements",
+          "A detection that flickers is distracting when translated directly into sound. Tracking and smoothing turn frame-by-frame model output into more stable signals."
+        ],
+        [
+          "Use more than one audio path",
+          "Tones communicate changing direction and nearness, while speech can name an object. The implementation includes a stereo fallback so the prototype is not tied to a single audio backend."
+        ]
+      ],
+      "limitations": "This is a prototype, not a validated navigation aid. Monocular depth estimates are relative signals, not a guarantee of physical distance. A usable mobility system would need careful testing with its intended users, including failures and environmental changes."
+    },
+    {
+      "project_id": "phoneme-error-detection",
+      "slug": "phoneme-error-detection",
+      "title": "Phoneme Error Detection",
+      "subtitle": "Making pronunciation feedback easier to use",
+      "role": "Dashboard contributor on a team project",
+      "category": "Team projects",
+      "stack": [
+        "React",
+        "Python",
+        "FastAPI",
+        "Wav2Vec2",
+        "SQLite"
+      ],
+      "focus": "Feedback a learner can act on",
+      "problem": "A transcript can show which word a system recognized, but it does not explain which sound a learner should practice. This team project analyzes speech at the phoneme level and presents feedback in a practice interface.",
+      "contribution": "I contributed an adaptive pronunciation dashboard. The application lets users record a word, view analysis results, and revisit saved attempts. My contribution is part of a larger system with a FastAPI backend and a Wav2Vec2-based phoneme model.",
+      "engineering_detail": "The backend compares predicted phonemes with a reference pronunciation and returns a structured response for the interface. Separate history endpoints let the product retain attempts instead of treating each recording as an isolated result.",
+      "steps": [
+        [
+          "Choose a word",
+          "The practice interface gives the learner a target word and a place to record an attempt."
+        ],
+        [
+          "Analyze the audio",
+          "The team’s speech pipeline predicts phonemes and compares them with a reference pronunciation."
+        ],
+        [
+          "Inspect the feedback",
+          "The dashboard presents the analysis so a learner can look beyond a full-word transcript and see the sounds being compared."
+        ],
+        [
+          "Revisit attempts",
+          "Saved practice history lets users return to earlier attempts instead of losing the context after each recording."
+        ]
+      ],
+      "decisions": [
+        [
+          "Connect feedback and practice",
+          "My dashboard contribution focused on the loop between making an attempt, understanding the result and deciding what to practice next. The interface needed to make the analysis usable."
+        ],
+        [
+          "Preserve the learning history",
+          "History endpoints and stored attempts connect individual recordings into a practice workflow. This supports revisiting performance without making an unmeasured claim about learning outcomes."
+        ]
+      ],
+      "limitations": "This was a team-built application. My contribution was the adaptive dashboard and practice workflow; the speech model was part of the broader team project."
     },
     {
       "project_id": "supplier-readiness",
@@ -96,9 +296,44 @@
       "title": "Supplier readiness assessment",
       "subtitle": "Find where a production ramp needs more preparation",
       "role": "Developer and analyst at Brooks Automation",
+      "category": "Work",
+      "stack": [
+        "Survey design",
+        "Response processing",
+        "Supplier analysis"
+      ],
+      "focus": "A recurring assessment across about 80 suppliers",
       "problem": "Ahead of a production ramp, the sourcing team needed a consistent way to understand supplier readiness and decide where to focus follow-up.",
       "contribution": "I built a survey sent to about 80 suppliers and tools that process the responses into a readiness view. The team can identify lagging suppliers and direct commodity managers to the areas that need attention.",
       "engineering_detail": "The workflow connects supplier responses to a repeatable review process, so the team can run the assessment again rather than rebuild the analysis each time.",
+      "steps": [
+        [
+          "Ask about readiness",
+          "The survey collects critical information about whether suppliers are prepared for the planned production ramp."
+        ],
+        [
+          "Process the responses",
+          "Analysis tools turn responses into a consistent view rather than leaving the team to compare each response manually."
+        ],
+        [
+          "Identify follow-up",
+          "The team can identify lagging suppliers and give commodity managers a clearer starting point for engagement."
+        ],
+        [
+          "Repeat the assessment",
+          "The survey and analysis are reused as a recurring process so readiness can be reviewed again as plans change."
+        ]
+      ],
+      "decisions": [
+        [
+          "Make the output actionable",
+          "The point of the assessment is to guide where the team spends its attention. The response analysis connects the survey to supplier follow-up rather than stopping at a summary of answers."
+        ],
+        [
+          "Build a repeatable process",
+          "The recurring workflow lets the team reassess readiness without rebuilding the analysis from the beginning. Approximately 80 describes survey recipients, not a claimed response rate."
+        ]
+      ],
       "result": "The survey and analysis became a recurring team process.",
       "limitations": "About 80 refers to suppliers sent the survey. It is not a claim about response rate or improved delivery performance."
     },
@@ -108,11 +343,143 @@
       "title": "On-time delivery intelligence",
       "subtitle": "Explore global delivery data and possible disruption",
       "role": "Developer during an IT internship at Brooks Automation",
+      "category": "Work",
+      "stack": [
+        "Data consolidation",
+        "Interactive dashboards",
+        "News analysis",
+        "Conversational AI"
+      ],
+      "focus": "A shared view for delivery investigation",
       "problem": "Teams needed a common view of delivery performance and a way to investigate gaps across suppliers and shipments.",
       "contribution": "I built the dashboard and data workflow, combining unstructured source data into a global delivery view with drill-down. I also added news-based exploration of possible disruption and a conversational agent for questions and report generation.",
       "engineering_detail": "The news feature helps users explore which suppliers or shipments may be exposed to an event. The conversational interface gives another way to work with the underlying delivery data and prepare reports.",
+      "steps": [
+        [
+          "Bring the data together",
+          "Unstructured source data is consolidated into a common view of global on-time delivery."
+        ],
+        [
+          "Explore the gaps",
+          "Teams drill into the delivery metrics to understand where supplier or shipment performance needs attention."
+        ],
+        [
+          "Add external context",
+          "News-based exploration helps users consider whether an event could affect particular suppliers or shipments."
+        ],
+        [
+          "Ask and report",
+          "A conversational agent supports questions about the data and helps users prepare reports for further discussion."
+        ]
+      ],
+      "decisions": [
+        [
+          "Connect the overview to investigation",
+          "Executives need the broad picture, while operational teams need to explore specific gaps. I built the dashboard to support both levels of review."
+        ],
+        [
+          "Use AI to help people work with the data",
+          "The agent sits alongside the dashboard as another way to investigate and report. The news feature adds context to a human review rather than making autonomous supply-chain decisions."
+        ]
+      ],
       "result": "I demonstrated the system across teams, including to the CIO and sourcing leadership.",
       "limitations": "The news feature helps people investigate potential exposure. It is not an automated decision to reroute shipments or change suppliers."
+    },
+    {
+      "project_id": "sync-assignments",
+      "slug": "sync-assignments",
+      "title": "Sync Assignments",
+      "subtitle": "Turning course emails into tasks",
+      "role": "Developer",
+      "category": "Independent",
+      "stack": [
+        "Python",
+        "Gmail API",
+        "Google Tasks",
+        "Todoist",
+        "macOS"
+      ],
+      "github": "https://github.com/AbhisarAnand/Sync-Assignments",
+      "focus": "Less copying between email and tasks",
+      "problem": "Assignment notices arrive in email, while the work is planned in a calendar or task manager. Copying the same deadlines into another system is repetitive and easy to get wrong.",
+      "contribution": "I built a Python workflow that reads course email notices, extracts assignments, and synchronizes them with Google Tasks and Todoist. The local version also includes a macOS launcher and notifications.",
+      "engineering_detail": "The workflow handles existing entries and daily-run checks rather than blindly adding a new task on every run. It reports new and existing assignments and sends a completion or error notification.",
+      "steps": [
+        [
+          "Read course notices",
+          "The workflow reads assignment notices from course emails instead of requiring manual entry in a separate task list."
+        ],
+        [
+          "Extract the assignment",
+          "Message parsing pulls out the assignment information and deadline used by the connected task services."
+        ],
+        [
+          "Synchronize entries",
+          "The integrations create or handle existing tasks in Google Tasks and Todoist, avoiding a new duplicate on every run."
+        ],
+        [
+          "Report completion",
+          "Daily-run checks and a macOS launcher support background use. Notifications report new or existing items and surface errors."
+        ]
+      ],
+      "decisions": [
+        [
+          "Treat repeat runs as normal",
+          "An automation that runs repeatedly has to account for what it has already done. Existing-entry handling and daily checks are part of the workflow rather than an afterthought."
+        ],
+        [
+          "Make background work visible",
+          "Notifications give the user a completion or error signal without asking them to keep a terminal open. The goal is a small utility that fits how coursework is already organized."
+        ]
+      ],
+      "limitations": "The workflow depends on the structure of course email notices and the connected task services."
+    },
+    {
+      "project_id": "mediscribe",
+      "slug": "mediscribe",
+      "title": "MediScribe capstone",
+      "subtitle": "Adding anomaly alerts to a healthcare application",
+      "role": "Contributor on a team capstone",
+      "category": "Team projects",
+      "stack": [
+        "C#",
+        "ASP.NET Core",
+        "Entity Framework Core",
+        "PostgreSQL"
+      ],
+      "focus": "Make unusual patterns visible for review",
+      "problem": "The capstone explores healthcare data workflows through transcription, dashboards, and analysis. One part of the work focuses on making cross-hospital anomalies visible to a reviewer.",
+      "contribution": "I contributed cross-hospital anomaly detection and hospital alerts to the team’s MediScribe capstone. My work focused on surfacing unusual patterns for review within the larger healthcare application.",
+      "engineering_detail": "The C# service groups symptom and diagnosis records by location, compares recent activity with a historical baseline, and routes findings through hospital notifications. Findings include counts, a category and an explanation, with scan results and failures recorded in logs.",
+      "steps": [
+        [
+          "Gather the relevant records",
+          "The service joins symptoms or diagnoses to visits and groups the records by location for comparison."
+        ],
+        [
+          "Compare recent activity",
+          "The spike detector compares recent 24-hour symptom counts with daily activity in the preceding baseline window."
+        ],
+        [
+          "Describe the finding",
+          "Findings carry a category, recent count, baseline and explanation rather than only returning a yes-or-no flag."
+        ],
+        [
+          "Notify reviewers",
+          "The service passes detected anomalies to the hospital notification workflow and records scan activity in logs."
+        ]
+      ],
+      "decisions": [
+        [
+          "Keep the alert explainable",
+          "The implementation distinguishes novel symptoms, statistical spikes and diagnosis clusters. A reviewer can see what type of pattern triggered the alert and the supporting counts."
+        ],
+        [
+          "Keep the component’s role clear",
+          "I contributed the anomaly detection and alerts within a larger team application. These are review signals in an academic prototype, not a diagnosis or a clinically validated recommendation."
+        ]
+      ],
+      "limitations": "This was an academic team project, separate from my MIE internship. The alerts were not clinically validated."
     }
   ]
 }
